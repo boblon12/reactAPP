@@ -45,6 +45,8 @@ function App() {
 
 
 
+  console.log('delete')
+
   return (
     <div className='App'>
       <Form create={createPost} />
@@ -54,7 +56,7 @@ function App() {
         { value: 'body', name: 'По описанию' }
       ]} onChangeValue={sortPosts} value={sortSelected} />
       <FindPost findPost={findPost} />
-      {(found.length === 0) ? ((posts.length !== 0) ? <PostList deletePost={deletePost} posts={sortedPosts} /> : <h1>Поля пустые</h1>) : <PostList deletePost={deletePost} posts={found} />}
+      <PostList deletePost={deletePost} posts={sortedPosts} /> : <h1>Поля пустые</h1>) : <PostList deletePost={deletePost} posts={found} />}
     </div>
   );
 }
