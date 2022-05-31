@@ -1,0 +1,9 @@
+.inpt {
+    width: 700px;
+    padding: 5px 15px;
+    margin: 10px 0;
+    color: blue;
+    font-size: 14px;
+    border: 1px solid blue;
+    background: transparent;
+}
