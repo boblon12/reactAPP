@@ -4,4 +4,10 @@
     font-size: 14px;
     border: 1px solid blue;
     background: transparent;
+    cursor: pointer;
+
+}
+
+.btn:hover {
+    background-color: aqua;
 }

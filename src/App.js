@@ -1,64 +1,82 @@
 
-import { useState, useMemo } from 'react';
-import FindPost from './components/findPost/findPost';
-import Form from './components/Form';
-import PostList from './components/PostList';
-import MySelect from './components/select/MySelect';
-import './syles/App.css'
+import { useEffect, useState } from 'react';
+import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
+import { AuthContext } from './components/hooks/context';
+import Login from './components/login/Login';
+import About from './components/pages/About';
+import PostPage from './components/pages/PostPage';
+import Posts from './components/pages/Posts';
+import Button from './components/UI/Button';
+import './syles/App.scss'
+
+
+
+
 
 function App() {
 
-  const [posts, setPosts] = useState([{ id: 1, title: 'title', body: 'value' }]);
-  const [sortSelected, setSelectedSort] = useState('');
-  const [found, setfoundPosts] = useState('');
+  let activeStyle = {
+    textDecoration: "underline",
+    color: "red",
+  };
 
-  const sortPosts = (selector) => {
-    setSelectedSort(selector)
-    console.log(sortSelected)
+
+  const [isAuth, setAuth] = useState(false);
+
+  useEffect(() => {
+     if (localStorage.getItem('auth')) {
+       setAuth(true);
+     }
+  }, [])
+  
+  const logut = () => {
+    setAuth(false);
+    localStorage.setItem('auth', 'false ')
   }
-
-  const sortedPosts = useMemo( () => {
-    console.log('Use MEmo')
-    if (sortSelected) {
-      return[...posts].sort((a, b) => a[sortSelected].localeCompare(b[sortSelected]))
-    }
-    else
-      return posts;
-  }, [sortSelected, posts])
-
-
-
-  const findPost = (post) => {
-    if (post === '') { setfoundPosts('') }
-    else setfoundPosts([...posts].filter(oldPost => oldPost.title.startsWith(post) || oldPost.body.startsWith(post)))
-  }
-
-
-  const createPost = (newPost) => {
-    setPosts([...posts, newPost]);
-  }
-
-  const deletePost = (post) => {
-    setPosts(posts.filter(p => p.id !== post.id))
-
-  }
-
-
-
-  console.log('delete')
 
   return (
-    <div className='App'>
-      <Form create={createPost} />
-      <hr className='hr-line' />
-      <MySelect defaltvalue={'Сортировка по'} options={[
-        { value: 'title', name: 'По названию' },
-        { value: 'body', name: 'По описанию' }
-      ]} onChangeValue={sortPosts} value={sortSelected} />
-      <FindPost findPost={findPost} />
-      <PostList deletePost={deletePost} posts={sortedPosts} /> : <h1>Поля пустые</h1>) : <PostList deletePost={deletePost} posts={found} />}
-    </div>
+    <>
+      <AuthContext.Provider value={{ isAuth, setAuth }}>
+        <BrowserRouter>
+          <nav className='navigation'>
+            <Button onClick={logut}>Выйти</Button>
+            <div className='navigation__item'>
+              <NavLink style={({ isActive }) =>
+                isActive ? activeStyle : undefined
+              } to='/posts'>
+                Posts
+              </NavLink>
+            </div>
+            <div className='navigation__item'>
+              <NavLink style={({ isActive }) =>
+                isActive ? activeStyle : undefined
+              } to='/about'>
+                About
+              </NavLink>
+            </div>
+          </nav>
+          {
+            isAuth ?
+              <Routes>
+                <Route element={<Posts />} exact path="/posts" />
+                <Route path="/posts/:id" element={<PostPage />}></Route>
+                <Route element={<About />} path="/about" />
+                <Route element={<Posts />} path="/*" />
+              </Routes>
+              :
+              <Routes>
+                <Route element={<Login />} exact path='/login' />
+                <Route element={<Login />} exact path='/*' />
+              </Routes>
+          }
+
+
+
+        </BrowserRouter>
+      </AuthContext.Provider>
+    </>
   );
+
 }
 
 export default App;
